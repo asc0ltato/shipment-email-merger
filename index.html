@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>SSE Approved Summaries Test</title>
+</head>
+<body>
+  <h1>SSE Approved Summaries Test (backend client)</h1>
+
+  <label>
+    sessionId:
+    <input id="sessionId" type="text" style="width: 400px;" />
+  </label>
+  <button id="connect">Connect</button>
+
+  <p id="status">Not connected</p>
+
+  <pre id="log" style="border:1px solid #ccc; padding:8px; max-height:400px; overflow:auto;"></pre>
+
+  <script>
+    let es;
+
+    document.getElementById('connect').onclick = function () {
+      const sid = document.getElementById('sessionId').value.trim();
+      if (!sid) {
+        alert('Enter sessionId');
+        return;
+      }
+
+      if (es) {
+        es.close();
+      }
+
+      const url = 'http://localhost:3001/api/email-groups/approved/sse-test?sessionId=' + encodeURIComponent(sid);
+      document.getElementById('status').textContent = 'Connecting to ' + url + ' ...';
+      es = new EventSource(url);
+
+      es.addEventListener('open', () => {
+        document.getElementById('status').textContent = 'Connected, waiting for approved summaries...';
+      });
+
+      es.addEventListener('approved_summary', (event) => {
+        const log = document.getElementById('log');
+        log.textContent =
+          '--- ' + new Date().toISOString() + ' ---\n' +
+          event.data + '\n\n' +
+          log.textContent;
+      });
+
+      es.addEventListener('error', () => {
+        document.getElementById('status').textContent = 'Connection error / closed';
+        es.close();
+      });
+    };
+  </script>
+</body>
+</html>
