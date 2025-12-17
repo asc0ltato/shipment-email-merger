@@ -81,10 +81,18 @@ export function EmailGroupList({
                 result.sort((a, b) => new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime());
                 break;
             case 'id-asc':
-                result.sort((a, b) => a.emailGroupId.localeCompare(b.emailGroupId));
+                result.sort((a, b) => {
+                    const numA = parseInt(a.emailGroupId.replace(/\D/g, '')) || 0;
+                    const numB = parseInt(b.emailGroupId.replace(/\D/g, '')) || 0;
+                    return numA - numB;
+                });
                 break;
             case 'id-desc':
-                result.sort((a, b) => b.emailGroupId.localeCompare(a.emailGroupId));
+                result.sort((a, b) => {
+                    const numA = parseInt(a.emailGroupId.replace(/\D/g, '')) || 0;
+                    const numB = parseInt(b.emailGroupId.replace(/\D/g, '')) || 0;
+                    return numB - numA;
+                });
                 break;
         }
 

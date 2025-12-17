@@ -27,8 +27,8 @@ const statusOptions: { value: StatusFilter; label: string }[] = [
 const sortOptions: { value: SortOption; label: string }[] = [
     { value: 'date-desc', label: 'Newest first' },
     { value: 'date-asc', label: 'Oldest first' },
-    { value: 'id-asc', label: 'A-Z' },
-    { value: 'id-desc', label: 'Z-A' }
+    { value: 'id-asc', label: '1-9' },
+    { value: 'id-desc', label: '9-1' }
 ];
 
 const tooltips = {
@@ -38,7 +38,7 @@ const tooltips = {
     },
     sort: {
         title: "Sort options",
-        content: "Organize email groups by date (newest/oldest) or by ID (alphabetical order)"
+        content: "Organize email groups by date (newest/oldest) or by ID (numerical order)"
     },
     search: {
         title: "Search email groups",
@@ -230,7 +230,7 @@ export function EmailGroupFilters({
                     </svg>
                     <input
                         type="text"
-                        placeholder="Enter email group ID (e.g., SR-123456)"
+                        placeholder="Enter email group ID (e.g., 123456)"
                         value={searchTerm}
                         onChange={(e) => onSearchChange(e.target.value)}
                         className="w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-lg bg-white text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-all duration-200 placeholder-slate-400 font-medium"
@@ -345,8 +345,8 @@ export function EmailGroupFilters({
                                                 <svg className="w-3 h-3 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"></path>
                                                 </svg>
-                                                <span className="font-medium text-slate-700">ID A-Z / Z-A:</span>
-                                                <span className="text-slate-600">Alphabetical order</span>
+                                                <span className="font-medium text-slate-700">ID 1-9 / 9-1:</span>
+                                                <span className="text-slate-600">Numerical order</span>
                                             </div>
                                         </div>
                                     </div>
