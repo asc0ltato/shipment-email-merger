@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 const getBackendUrl = () => {
-  return process.env.NODE_ENV === 'production' ? 'http://backend:3001' : 'http://localhost:3001';
+  return process.env.NEXT_PUBLIC_BACKEND_URL || process.env.BACKEND_URL || 'http://localhost:3001';
 };
 
 export async function getDashboardData() {

@@ -1,6 +1,6 @@
 import { logger } from '@/utils/logger';
 
-const API_BASE_URL = process.env.BACKEND_API_URL || 'http://localhost:3001';
+const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001';
 
 const handleAuthError = async (error: any): Promise<never> => {
     logger.error('Authentication error:', error);
