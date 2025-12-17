@@ -1,6 +1,7 @@
 import { Dashboard } from '@/components/Dashboard/Dashboard';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { logger } from '@/utils/logger';
 
 const getBackendUrl = () => {
   return process.env.NEXT_PUBLIC_BACKEND_URL || process.env.BACKEND_URL || 'http://localhost:3001';
@@ -11,10 +12,10 @@ export default async function DashboardPage() {
         const cookieStore = await cookies();
         const sessionId = cookieStore.get('sessionId')?.value;
 
-        console.log('Server: Checking session cookie:', sessionId ? 'found' : 'not found');
+        logger.debug('Server: Checking session cookie:', sessionId ? 'found' : 'not found');
 
         if (!sessionId) {
-            console.log('Server: No session cookie, redirecting to login');
+            logger.debug('Server: No session cookie, redirecting to login');
             redirect('/');
         }
         
@@ -38,14 +39,14 @@ export default async function DashboardPage() {
         ]);
 
         if (!userResponse.ok) {
-            console.log('Server: User API failed, redirecting to login');
+            logger.debug('Server: User API failed, redirecting to login');
             redirect('/');
         }
 
         const userData = await userResponse.json();
         const emailGroupsData = await emailGroupsResponse.ok ? await emailGroupsResponse.json() : { data: { emailGroups: [] } };
 
-        console.log('Server: Data loaded successfully');
+        logger.debug('Server: Data loaded successfully');
 
         const dashboardData = {
             user: userData.data?.user,
@@ -55,7 +56,7 @@ export default async function DashboardPage() {
 
         return <Dashboard initialData={dashboardData} />;
     } catch (error) {
-        console.error('Server data loading error:', error);
+        logger.error('Server data loading error:', error);
         redirect('/');
     }
 }

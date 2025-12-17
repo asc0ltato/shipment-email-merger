@@ -2,6 +2,7 @@
 
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { logger } from '@/utils/logger';
 
 const getBackendUrl = () => {
   return process.env.NEXT_PUBLIC_BACKEND_URL || process.env.BACKEND_URL || 'http://localhost:3001';
@@ -12,10 +13,10 @@ export async function getDashboardData() {
         const cookieStore = await cookies();
         const sessionId = cookieStore.get('sessionId')?.value;
 
-        console.log('Server: Checking session cookie:', sessionId ? 'found' : 'not found');
+        logger.debug('Server: Checking session cookie:', sessionId ? 'found' : 'not found');
 
         if (!sessionId) {
-            console.log('Server: No session cookie, redirecting to login');
+            logger.debug('Server: No session cookie, redirecting to login');
             redirect('/');
         }
 
@@ -39,14 +40,14 @@ export async function getDashboardData() {
         ]);
 
         if (!userResponse.ok) {
-            console.log('Server: User API failed, clearing session and redirecting');
+            logger.debug('Server: User API failed, clearing session and redirecting');
             redirect('/');
         }
 
         const userData = await userResponse.json();
         const emailGroupsData = await emailGroupsResponse.ok ? await emailGroupsResponse.json() : { data: { emailGroups: [] } };
 
-        console.log('Server: Data loaded successfully');
+        logger.debug('Server: Data loaded successfully');
 
         return {
             user: userData.data?.user,
@@ -54,7 +55,7 @@ export async function getDashboardData() {
             emailStats: emailGroupsData.data?.emailStats || {}
         };
     } catch (error) {
-        console.error('Server data loading error:', error);
+        logger.error('Server data loading error:', error);
         redirect('/');
     }
 }

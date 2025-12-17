@@ -6,8 +6,8 @@ const nextConfig = {
     typescript: {
         ignoreBuildErrors: true,
     },
-    publicRuntimeConfig: {
-        BACKEND_URL: process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001',
+    env: {
+        NEXT_PUBLIC_BACKEND_URL: process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001',
     },
     webpack: (config) => {
         config.resolve.alias = {
