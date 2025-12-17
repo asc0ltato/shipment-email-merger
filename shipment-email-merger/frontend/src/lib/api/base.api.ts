@@ -1,6 +1,15 @@
 import { logger } from '@/utils/logger';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001';
+const getBaseUrl = (): string => {
+    const url = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001';
+    return url.replace(/\/+$/, '');
+};
+
+const normalizeEndpoint = (endpoint: string): string => {
+    return '/' + endpoint.replace(/^\/+/, '');
+};
+
+const API_BASE_URL = getBaseUrl();
 
 const handleAuthError = async (error: any): Promise<never> => {
     logger.error('Authentication error:', error);
@@ -24,7 +33,8 @@ export const baseApi = {
             headers['Authorization'] = `Bearer ${sessionId}`;
         }
 
-        const url = `${API_BASE_URL}${endpoint}`;
+        const normalizedEndpoint = normalizeEndpoint(endpoint);
+        const url = `${API_BASE_URL}${normalizedEndpoint}`;
         logger.log(`API Request: ${options.method || 'GET'} ${url}`);
 
         try {
@@ -75,7 +85,8 @@ export const baseApi = {
             headers['Authorization'] = `Bearer ${sessionId}`;
         }
 
-        const url = `${API_BASE_URL}${endpoint}`;
+        const normalizedEndpoint = normalizeEndpoint(endpoint);
+        const url = `${API_BASE_URL}${normalizedEndpoint}`;
         return fetch(url, { ...options, headers });
     },
 

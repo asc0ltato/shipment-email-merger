@@ -4,7 +4,8 @@ import { redirect } from 'next/navigation';
 import { logger } from '@/utils/logger';
 
 const getBackendUrl = () => {
-  return process.env.NEXT_PUBLIC_BACKEND_URL || process.env.BACKEND_URL || 'http://localhost:3001';
+  const url = process.env.NEXT_PUBLIC_BACKEND_URL || process.env.BACKEND_URL || 'http://localhost:3001';
+  return url.replace(/\/+$/, '');
 };
 
 export default async function DashboardPage() {

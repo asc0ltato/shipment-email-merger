@@ -7,7 +7,9 @@ const nextConfig = {
         ignoreBuildErrors: true,
     },
     env: {
-        NEXT_PUBLIC_BACKEND_URL: process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001',
+        NEXT_PUBLIC_BACKEND_URL: process.env.NEXT_PUBLIC_BACKEND_URL 
+            ? process.env.NEXT_PUBLIC_BACKEND_URL.replace(/\/+$/, '')
+            : 'http://localhost:3001',
     },
     webpack: (config) => {
         config.resolve.alias = {
