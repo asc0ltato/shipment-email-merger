@@ -7,6 +7,7 @@ import {
 } from '@/types/api.types';
 import { IEmailGroup } from '@/types/email-group.types';
 import { baseApi } from './base.api';
+import { logger } from '@/utils/logger';
 
 export const emailGroupsApi = {
     getAllEmailGroups: () => {
@@ -27,7 +28,7 @@ export const emailGroupsApi = {
 
         const endpoint = `/api/email/email-groups${params.toString() ? `?${params.toString()}` : ''}`;
 
-        console.log('Calling syncEmails with params:', {
+        logger.log('Calling syncEmails with params:', {
             startDate: startDate || 'not provided (default: last 1 day)',
             endDate: endDate || 'not provided (default: today)'
         });

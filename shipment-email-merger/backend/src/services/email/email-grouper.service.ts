@@ -2,15 +2,12 @@ import { IEmail } from '@/models/email';
 import { IEmailGroup } from '@/models/email-group';
 import { logger } from '@/utils';
 import { EmailGroupId } from '@/utils/email-group-id';
-import { ValidationUtils } from '@/utils/validation';
 
 export class EmailGrouperService {
     private emailGroupIdService: EmailGroupId;
-    private validationUtils: ValidationUtils;
 
     constructor() {
         this.emailGroupIdService = new EmailGroupId();
-        this.validationUtils = new ValidationUtils();
     }
 
     groupEmailsByEmailGroup(emails: IEmail[]): IEmailGroup[] {
@@ -41,8 +38,8 @@ export class EmailGrouperService {
                 return;
             }
 
-            const normalizedId = this.validationUtils.normalizeAndValidateEmailGroupId(email.emailGroupId);
-            if (!normalizedId) {
+            const normalizedId = this.emailGroupIdService.normalizeEmailGroupId(email.emailGroupId);
+            if (!normalizedId || normalizedId.length < 6) {
                 logger.warn(`Invalid email group ID format: ${email.emailGroupId}`);
                 return;
             }
@@ -71,8 +68,8 @@ export class EmailGrouperService {
                 return;
             }
 
-            const normalizedPotentialId = this.validationUtils.normalizeAndValidateEmailGroupId(potentialId);
-            if (!normalizedPotentialId) {
+            const normalizedPotentialId = this.emailGroupIdService.normalizeEmailGroupId(potentialId);
+            if (!normalizedPotentialId || normalizedPotentialId.length < 6) {
                 logger.warn(`Invalid potential email group ID: ${potentialId}`);
                 return;
             }

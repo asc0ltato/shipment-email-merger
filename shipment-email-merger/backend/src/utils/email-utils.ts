@@ -1,3 +1,5 @@
+import { logger } from './logger';
+
 export class EmailUtilsService {
     getAddressText(address: any): string {
         if (!address) return '';
@@ -18,17 +20,17 @@ export class EmailUtilsService {
 
             if (day.length === 2 && month.length === 2 && year.length === 4) {
                 const converted = `${year}-${month}-${day}`;
-                console.log(`Converted DD-MM-YYYY ${dateString} -> YYYY-MM-DD ${converted}`);
+                logger.debug(`Converted DD-MM-YYYY ${dateString} -> YYYY-MM-DD ${converted}`);
                 return converted;
             }
         }
 
         if (dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
-            console.log(`Date is already in YYYY-MM-DD format: ${dateString}`);
+            logger.debug(`Date is already in YYYY-MM-DD format: ${dateString}`);
             return dateString;
         }
 
-        console.warn(`Unknown date format: "${dateString}", using as is`);
+        logger.warn(`Unknown date format: "${dateString}", using as is`);
         return dateString;
     }
 

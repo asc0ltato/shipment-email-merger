@@ -1,7 +1,9 @@
+import { logger } from '@/utils/logger';
+
 const API_BASE_URL = process.env.BACKEND_API_URL || 'http://localhost:3001';
 
 const handleAuthError = async (error: any): Promise<never> => {
-    console.error('Authentication error:', error);
+    logger.error('Authentication error:', error);
     localStorage.clear();
 
     if (typeof window !== 'undefined') {
@@ -23,7 +25,7 @@ export const baseApi = {
         }
 
         const url = `${API_BASE_URL}${endpoint}`;
-        console.log(`API Request: ${options.method || 'GET'} ${url}`);
+        logger.log(`API Request: ${options.method || 'GET'} ${url}`);
 
         try {
             const response = await fetch(url, {
@@ -31,7 +33,7 @@ export const baseApi = {
                 headers,
             });
 
-            console.log(`API Response: ${response.status} ${response.statusText}`);
+            logger.log(`API Response: ${response.status} ${response.statusText}`);
 
             if (response.status === 401) {
                 return handleAuthError(new Error('Unauthorized'));
@@ -47,15 +49,15 @@ export const baseApi = {
 
             if (!response.ok) {
                 const errorText = await response.text();
-                console.error('Error response:', errorText);
+                logger.error('Error response:', errorText);
                 throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
             }
 
             const data = await response.json();
-            console.log('API Response data:', data);
+            logger.log('API Response data:', data);
             return data;
         } catch (error: any) {
-            console.error('API request failed:', error);
+            logger.error('API request failed:', error);
 
             if (error.message.includes('401') || error.message.includes('Unauthorized')) {
                 return handleAuthError(error);

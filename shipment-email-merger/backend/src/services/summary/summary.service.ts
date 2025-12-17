@@ -96,12 +96,12 @@ export class SummaryService {
 
     async updateSummaryAnalysis(
         summaryId: string,
-        aiAnalysis: any,
+        shipmentData: any,
         summaryText: string,
         status: 'pending' | 'approved' | 'rejected' | 'failed' = 'pending'
     ): Promise<boolean> {
         try {
-            const result = await this.summaryRepository.updateSummaryAnalysis(summaryId, aiAnalysis, summaryText, status);
+            const result = await this.summaryRepository.updateSummaryAnalysis(summaryId, shipmentData, summaryText, status);
             logger.info(`Summary analysis updated: ${summaryId} with status: ${status}`);
             return result;
         } catch (error) {

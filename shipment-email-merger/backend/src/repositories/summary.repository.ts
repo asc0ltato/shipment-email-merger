@@ -36,7 +36,7 @@ export class SummaryRepository {
             const summaryData = {
                 summaryId: summary.summaryId,
                 emailGroupId: summary.emailGroupId,
-                aiAnalysis: summary.aiAnalysis,
+                shipment_data: summary.shipment_data,
                 summary: summary.summary,
                 status: summary.status,
                 createdAt: summary.createdAt,
@@ -70,11 +70,11 @@ export class SummaryRepository {
         }
     }
 
-    async updateSummaryAnalysis(summaryId: string, aiAnalysis: any, summaryText: string, status: 'pending' | 'approved' | 'rejected' | 'failed' = 'pending'): Promise<boolean> {
+    async updateSummaryAnalysis(summaryId: string, shipmentData: any, summaryText: string, status: 'pending' | 'approved' | 'rejected' | 'failed' = 'pending'): Promise<boolean> {
         try {
             const [affectedCount] = await this.models.Summary.update(
                 {
-                    aiAnalysis,
+                    shipment_data: shipmentData,
                     summary: summaryText,
                     status: status,
                     updatedAt: new Date()
@@ -124,7 +124,7 @@ export class SummaryRepository {
             const summaryData = {
                 summaryId,
                 emailGroupId,
-                aiAnalysis: this.createDefaultAIAnalysis(),
+                shipment_data: this.createDefaultShipmentData(),
                 summary: '',
                 status: status,
                 createdAt: new Date(),
@@ -306,12 +306,10 @@ export class SummaryRepository {
         return this.updateSummaryStatus(summaryId, 'failed');
     }
 
-    private createDefaultAIAnalysis(): any {
+    private createDefaultShipmentData(): any {
         return {
-            name: 'Default Analysis',
-            is_ai_generated: false,
-            upload_id: `upload_${Date.now()}`,
-            pre_shipments: [],
+            name: 'Default Shipment Data',
+            shipment_details: [],
             modes: []
         };
     }
@@ -320,7 +318,7 @@ export class SummaryRepository {
         const mappedSummary: ISummary = {
             summaryId: summary.summaryId,
             emailGroupId: summary.emailGroupId,
-            aiAnalysis: summary.aiAnalysis,
+            shipment_data: summary.shipment_data,
             summary: summary.summary || '',
             status: summary.status,
             createdAt: summary.createdAt,

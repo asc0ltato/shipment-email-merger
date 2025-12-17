@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 
 interface ApprovedSummaryEvent {
     emailGroupId: string;
-    aiAnalysis: any;
+    shipment_data: any;
 }
 
 const getBackendUrl = () => {
@@ -72,7 +72,7 @@ export default function SseTestPage() {
                                         Email Group: <span className="text-slate-900">{event.emailGroupId}</span>
                                     </div>
                                     <pre className="whitespace-pre-wrap break-all text-[11px] bg-white border border-slate-200 rounded p-2">
-                                        {JSON.stringify(event.aiAnalysis, null, 2)}
+                                        {JSON.stringify(event.shipment_data, null, 2)}
                                     </pre>
                                 </li>
                             ))}

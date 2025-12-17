@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { authApi } from '@/lib/api';
 import { ProviderIcon } from './ProviderIcon';
+import { logger } from '@/utils/logger';
 
 export function LoginForm() {
     const [isLoading, setIsLoading] = useState(false);
@@ -42,10 +43,6 @@ export function LoginForm() {
             return 'You will be asked to grant access to Mail.ru mailbox to search for order-related emails';
         }
 
-        if (domain?.includes('outlook.com')) {
-            return 'You will be asked to grant access to Outlook mailbox to search for order-related emails';
-        }
-
         return '';
     };
 
@@ -53,7 +50,6 @@ export function LoginForm() {
         const domain = email.split('@')[1]?.toLowerCase();
         if (domain?.includes('mail.ru')) return 'Mail.ru';
         if (domain?.includes('gmail.com')) return 'Google';
-        if (domain?.includes('outlook.com')) return 'Outlook';
         return 'email service';
     };
 
@@ -67,25 +63,25 @@ export function LoginForm() {
         setError(null);
 
         try {
-            console.log(`Starting OAuth for: ${email}`);
+            logger.log(`Starting OAuth for: ${email}`);
 
             localStorage.setItem('userEmail', email);
 
             const response = await authApi.getAuthUrl(email);
 
-            console.log('Full API response:', response);
+            logger.log('Full API response:', response);
 
             if (response.success && response.data?.authUrl) {
-                console.log(`Auth URL received: ${response.data.authUrl}`);
+                logger.log(`Auth URL received: ${response.data.authUrl}`);
                 window.location.href = response.data.authUrl;
             } else {
                 const errorMessage = response.message || 'Failed to get authorization URL';
-                console.error('Auth URL error:', errorMessage);
+                logger.error('Auth URL error:', errorMessage);
                 setError(`Authorization failed: ${errorMessage}`);
                 localStorage.removeItem('userEmail');
             }
         } catch (error: any) {
-            console.error('OAuth error:', error);
+            logger.error('OAuth error:', error);
             setError(error.message || 'Server connection error');
             localStorage.removeItem('userEmail');
         } finally {
@@ -177,9 +173,8 @@ export function LoginForm() {
                 <div className="text-center pt-4 border-t border-slate-200/60">
                     <p className="text-sm text-slate-500 font-medium">
                         Supported services:{' '}
-                        <span className="text-slate-700">Gmail</span>,{' '}
-                        <span className="text-slate-700">Mail.ru</span> and{' '}
-                        <span className="text-slate-700">Outlook</span>
+                        <span className="text-slate-700">Gmail</span> and{' '}
+                        <span className="text-slate-700">Mail.ru</span>
                     </p>
                 </div>
             </div>

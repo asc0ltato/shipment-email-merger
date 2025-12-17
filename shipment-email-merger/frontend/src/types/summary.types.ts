@@ -1,38 +1,33 @@
 export interface ISummary {
     summaryId: string;
     emailGroupId: string;
-    aiAnalysis: ShipmentRequest;
+    shipment_data: ShipmentRequest;
     summary: string;
-    status: 'pending' | 'processing' | 'approved' | 'rejected' | 'failed';
+    status: 'pending' | 'approved' | 'rejected' | 'processing' | 'failed';
     createdAt: Date;
     updatedAt: Date;
 }
 
 export type ShipmentRequest = {
     name: string;
-    is_ai_generated: boolean;
-    upload_id: string;
-    pre_shipments: ShipmentPreShipment[];
+    shipment_details: Array<{
+        shipping_date_from: string | null;
+        shipping_date_to: string | null;
+        shipping_time_from: string | null;
+        shipping_time_to: string | null;
+        arrival_date_from: string | null;
+        arrival_date_to: string | null;
+        arrival_time_from: string | null;
+        arrival_time_to: string | null;
+        address_from: ShipmentAddress;
+        address_dest: ShipmentAddress;
+        contents: ShipmentContent[];
+    }>;
     modes: ShipmentMode[];
     for_carriers?: string;
 };
 
-export type ShipmentPreShipment = {
-    shipping_date_from: string | null;
-    shipping_date_to: string | null;
-    shipping_time_from: string | null;
-    shipping_time_to: string | null;
-    arrival_date_from: string | null;
-    arrival_date_to: string | null;
-    arrival_time_from: string | null;
-    arrival_time_to: string | null;
-    address_from: ShipmentAddress;
-    address_dest: ShipmentAddress;
-    contents: ShipmentContent[];
-};
-
 export type ShipmentAddress = {
-    id: number;
     country: string | null;
     city: string | null;
     zipcode: string | null;
@@ -44,23 +39,10 @@ export type ShipmentAddress = {
 };
 
 export type ShipmentContent = {
-    type: {
-        id: number;
-        name: string;
-        width: number;
-        length: number;
-        height: number;
-        height_edit: boolean;
-        width_edit: boolean;
-        length_edit: boolean;
-        dimension_unit: boolean;
-        shortname: boolean;
-        is_container: boolean;
-    };
+    name: string;
     quantity: number;
 };
 
 export type ShipmentMode = {
-    id: number;
     name: string;
 };

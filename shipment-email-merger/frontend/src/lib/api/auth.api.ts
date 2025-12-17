@@ -1,6 +1,7 @@
 import { ApiResponse } from '@/types/api.types';
 import { User, AuthCallbackData, AuthUrlData } from '@/types/auth.types';
 import { baseApi } from './base.api';
+import { logger } from '@/utils/logger';
 
 export const authApi = {
     getAuthUrl: (email: string) => {
@@ -33,7 +34,7 @@ export const authApi = {
             const response = await authApi.getUser();
             return response.success;
         } catch (error) {
-            console.error('Session refresh failed:', error);
+            logger.error('Session refresh failed:', error);
             return false;
         }
     }

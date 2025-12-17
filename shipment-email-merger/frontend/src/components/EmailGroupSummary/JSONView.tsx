@@ -6,9 +6,9 @@ interface JSONViewProps {
 }
 
 export function JSONView({ emailGroup, onDownloadJson }: JSONViewProps) {
-    const aiAnalysis = emailGroup.summary?.aiAnalysis;
+    const shipmentData = emailGroup.summary?.shipment_data;
 
-    if (!aiAnalysis) {
+    if (!shipmentData) {
         return (
             <div className="text-center py-8 text-slate-500">
                 <p>No AI analysis data available</p>
@@ -16,7 +16,7 @@ export function JSONView({ emailGroup, onDownloadJson }: JSONViewProps) {
         );
     }
 
-    const jsonString = JSON.stringify(aiAnalysis, null, 2);
+    const jsonString = JSON.stringify(shipmentData, null, 2);
 
     return (
         <div className="h-full flex flex-col">

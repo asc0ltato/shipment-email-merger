@@ -5,8 +5,14 @@ import { logger } from '@/utils';
 export const requireAuth = (authService: AuthService) => {
     return async (req: Request, res: Response, next: NextFunction) => {
         try {
+            // Пробуем получить sessionId из заголовка Authorization
             const authHeader = req.headers.authorization;
-            const sessionId = authHeader?.replace('Bearer ', '');
+            let sessionId = authHeader?.replace('Bearer ', '');
+            
+            // Если нет в заголовке, пробуем из query параметра (для SSE запросов)
+            if (!sessionId && req.query.sessionId) {
+                sessionId = req.query.sessionId as string;
+            }
 
             logger.debug('Auth middleware - sessionId:', sessionId ? 'present' : 'missing');
 

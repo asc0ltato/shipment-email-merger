@@ -1,3 +1,5 @@
+import { logger } from './logger';
+
 export class LockUtils {
     private locks: Map<string, { promise: Promise<any>; timestamp: number }> = new Map();
     private readonly DEFAULT_TIMEOUT = 30000;
@@ -16,14 +18,14 @@ export class LockUtils {
 
         const existingLock = this.locks.get(key);
         if (existingLock) {
-            console.log(`Lock ${key} already exists, waiting...`);
+            logger.debug(`Lock ${key} already exists, waiting...`);
             return existingLock.promise;
         }
 
         const lockPromise = this.executeWithTimeout(operation, timeoutMs, key)
             .finally(() => {
                 this.locks.delete(key);
-                console.log(`Lock ${key} released`);
+                logger.debug(`Lock ${key} released`);
             });
 
         this.locks.set(key, {
@@ -31,7 +33,7 @@ export class LockUtils {
             timestamp: Date.now()
         });
 
-        console.log(`Lock ${key} acquired`);
+        logger.debug(`Lock ${key} acquired`);
         return lockPromise;
     }
 
@@ -60,7 +62,7 @@ export class LockUtils {
         const now = Date.now();
         for (const [key, lock] of this.locks.entries()) {
             if (now - lock.timestamp > this.DEFAULT_TIMEOUT + 10000) {
-                console.warn(`Cleaning up expired lock: ${key}`);
+                logger.warn(`Cleaning up expired lock: ${key}`);
                 this.locks.delete(key);
             }
         }
@@ -74,7 +76,7 @@ export class LockUtils {
     public forceRelease(key: string): boolean {
         const existed = this.locks.delete(key);
         if (existed) {
-            console.warn(`Force released lock: ${key}`);
+            logger.warn(`Force released lock: ${key}`);
         }
         return existed;
     }

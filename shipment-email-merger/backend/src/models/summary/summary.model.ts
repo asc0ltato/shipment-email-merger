@@ -6,7 +6,7 @@ interface SummaryCreationAttributes extends Optional<ISummary, 'createdAt' | 'up
 export class SummaryModel extends Model<ISummary, SummaryCreationAttributes> implements ISummary {
     public summaryId!: string;
     public emailGroupId!: string;
-    public aiAnalysis!: ShipmentRequest;
+    public shipment_data!: ShipmentRequest;
     public summary!: string;
     public status!: 'pending' | 'processing' | 'approved' | 'rejected' | 'failed';
     public createdAt!: Date;
@@ -29,7 +29,7 @@ export const initSummaryModel = (sequelize: Sequelize): typeof SummaryModel => {
             },
             onDelete: 'CASCADE'
         },
-        aiAnalysis: {
+        shipment_data: {
             type: DataTypes.JSONB,
             allowNull: false,
         },

@@ -1,3 +1,6 @@
+const isDevelopment = process.env.NODE_ENV === 'development';
+const isProduction = process.env.NODE_ENV === 'production';
+
 export class Logger {
     private readonly level: string;
 
@@ -10,26 +13,41 @@ export class Logger {
         return levels.indexOf(level) <= levels.indexOf(this.level);
     }
 
+    private shouldOutput(): boolean {
+        if (isProduction) {
+            return false;
+        }
+        return isDevelopment;
+    }
+
     public info(message: string, meta?: any): void {
-        if (this.shouldLog('info')) {
+        if (this.shouldLog('info') && this.shouldOutput()) {
             console.log(`[INFO] ${message}`, meta || '');
         }
     }
 
     public error(message: string, error?: any): void {
         if (this.shouldLog('error')) {
-            console.error(`[ERROR] ${message}`, error || '');
+            if (isProduction) {
+                console.error(`[ERROR] ${message}`);
+            } else {
+                console.error(`[ERROR] ${message}`, error || '');
+            }
         }
     }
 
     public warn(message: string, meta?: any): void {
         if (this.shouldLog('warn')) {
-            console.warn(`[WARN] ${message}`, meta || '');
+            if (isProduction) {
+                console.warn(`[WARN] ${message}`);
+            } else {
+                console.warn(`[WARN] ${message}`, meta || '');
+            }
         }
     }
 
     public debug(message: string, meta?: any): void {
-        if (this.shouldLog('debug')) {
+        if (this.shouldLog('debug') && isDevelopment) {
             console.debug(`[DEBUG] ${message}`, meta || '');
         }
     }

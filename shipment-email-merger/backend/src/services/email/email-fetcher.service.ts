@@ -2,6 +2,7 @@ import Imap from 'imap';
 import { simpleParser } from 'mailparser';
 import { logger } from '@/utils';
 import { EmailUtilsService } from '@/utils/email-utils';
+import { EmailGroupId } from '@/utils/email-group-id';
 
 export interface FetchedEmail {
     id: string;
@@ -23,6 +24,7 @@ export class EmailFetcherService {
     private imap: Imap | null = null;
     private isConnected: boolean = false;
     private emailUtils: EmailUtilsService;
+    private emailGroupIdService: EmailGroupId;
 
     constructor(
         private credentials: { email: string; accessToken: string },
@@ -32,6 +34,7 @@ export class EmailFetcherService {
             throw new Error('OAuth configuration required for EmailFetcherService');
         }
         this.emailUtils = new EmailUtilsService();
+        this.emailGroupIdService = new EmailGroupId();
     }
 
     async connect(): Promise<void> {
@@ -129,7 +132,7 @@ export class EmailFetcherService {
                     try {
                         const emails = await this.fetchEmailsWithAttachments(results.reverse());
                         const finalEmails = emails.filter(email =>
-                            /BY-\d{6}\b/.test(email.subject)
+                            this.emailGroupIdService.hasEmailGroupId(email.subject)
                         );
 
                         logger.info(`Final filtered ${finalEmails.length} emails with email group IDs`);
@@ -223,7 +226,7 @@ export class EmailFetcherService {
             logger.info('No date specified, using default: last 1 day');
         }
 
-        searchCriteria.push(['SUBJECT', 'BY-']);
+        searchCriteria.push(['SUBJECT', 'Shipment']);
         return searchCriteria;
     }
 

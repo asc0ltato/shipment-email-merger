@@ -26,16 +26,6 @@ export function ProviderIcon({ email }: ProviderIconProps) {
         );
     }
 
-    if (domain.includes('outlook.com')) {
-        return (
-            <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none">
-                <rect x="3" y="4" width="13" height="16" rx="1.5" fill="#0078D4" />
-                <path d="M16 6.5L21 8.5V18a1 1 0 0 1-1 1h-4V6.5Z" fill="#005A9E" />
-                <path d="M5 8.5L9.5 12L14 8.5" stroke="#FFFFFF" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-        );
-    }
-
     return (
         <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>

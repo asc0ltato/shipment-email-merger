@@ -32,24 +32,6 @@ const oauthProvidersConfig: { [key: string]: OAuthProviderConfig } = {
         imapHost: 'imap.mail.ru',
         imapPort: 993,
         imapAuthMethod: 'XOAUTH2'
-    },
-    'outlook.com': {
-        clientId: process.env.OUTLOOK_CLIENT_ID || '',
-        clientSecret: process.env.OUTLOOK_CLIENT_SECRET || '',
-        redirectUri: commonRedirectUri,
-        authUrl: 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize',
-        tokenUrl: 'https://login.microsoftonline.com/common/oauth2/v2.0/token',
-        userInfoUrl: 'https://graph.microsoft.com/v1.0/me',
-        scope: [
-            'offline_access',
-            'https://outlook.office.com/IMAP.AccessAsUser.All',
-            'openid',
-            'profile',
-            'email'
-        ],
-        imapHost: 'outlook.office365.com',
-        imapPort: 993,
-        imapAuthMethod: 'XOAUTH2'
     }
 };
 
@@ -96,8 +78,6 @@ export class OAuthProviderService {
         if (email.includes('gmail.com')) {
             authUrl.searchParams.set('access_type', 'offline');
             authUrl.searchParams.set('prompt', 'consent');
-        } else if (email.toLowerCase().includes('outlook.com')) {
-            authUrl.searchParams.set('response_mode', 'query');
         }
     }
 }

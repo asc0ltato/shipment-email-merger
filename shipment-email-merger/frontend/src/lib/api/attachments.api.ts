@@ -1,4 +1,5 @@
 import { baseApi } from './base.api';
+import { logger } from '@/utils/logger';
 
 export const attachmentsApi = {
     downloadAttachment: async (emailGroupId: string, filename: string): Promise<Blob> => {
@@ -18,7 +19,7 @@ export const attachmentsApi = {
 
         if (!response.ok) {
             const errorText = await response.text();
-            console.error(`Download error ${response.status}:`, errorText);
+            logger.error(`Download error ${response.status}:`, errorText);
             throw new Error(`API error: ${response.status}`);
         }
 

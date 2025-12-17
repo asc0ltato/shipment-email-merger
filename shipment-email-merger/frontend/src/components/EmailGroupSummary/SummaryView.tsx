@@ -7,9 +7,9 @@ interface AIAnalysisViewProps {
 
 export function AIAnalysisView({ emailGroup }: AIAnalysisViewProps) {
     const { summary } = emailGroup;
-    const aiAnalysis = summary?.aiAnalysis;
+    const shipmentData = summary?.shipment_data;
 
-    if (!aiAnalysis || !aiAnalysis.pre_shipments || aiAnalysis.pre_shipments.length === 0) {
+    if (!shipmentData || !shipmentData.shipment_details || shipmentData.shipment_details.length === 0) {
         return (
             <div className="flex-1 flex flex-col items-center justify-center text-center py-8 text-slate-500 min-h-[100px]">
                 <p className="text-sm">No summary data available</p>
@@ -17,7 +17,7 @@ export function AIAnalysisView({ emailGroup }: AIAnalysisViewProps) {
         );
     }
 
-    const shipment = aiAnalysis.pre_shipments[0];
+    const shipment = shipmentData.shipment_details[0];
 
     const hasShippingDates = shipment.shipping_date_from || shipment.shipping_date_to || 
                              shipment.shipping_time_from || shipment.shipping_time_to;
@@ -25,9 +25,9 @@ export function AIAnalysisView({ emailGroup }: AIAnalysisViewProps) {
                             shipment.arrival_time_from || shipment.arrival_time_to;
     const hasFromAddress = shipment.address_from.address || shipment.address_from.city || shipment.address_from.country || shipment.address_from.zipcode;
     const hasDestAddress = shipment.address_dest.address || shipment.address_dest.city || shipment.address_dest.country || shipment.address_dest.zipcode;
-    const hasContents = shipment.contents && shipment.contents.length > 0 && shipment.contents.some(content => content.type.name && content.type.name !== "Unknown");
-    const hasModes = aiAnalysis.modes && aiAnalysis.modes.length > 0 && aiAnalysis.modes.some(mode => mode.name && mode.name !== "Unknown");
-    const hasCarrierInfo = aiAnalysis.for_carriers && aiAnalysis.for_carriers !== "информация для перевозчиков";
+    const hasContents = shipment.contents && shipment.contents.length > 0 && shipment.contents.some(content => content.name && content.name !== "Unknown");
+    const hasModes = shipmentData.modes && shipmentData.modes.length > 0 && shipmentData.modes.some(mode => mode.name && mode.name !== "Unknown");
+    const hasCarrierInfo = shipmentData.for_carriers && shipmentData.for_carriers !== "информация для перевозчиков";
 
     if (!hasShippingDates && !hasArrivalDates && !hasFromAddress && !hasDestAddress && !hasContents && !hasModes && !hasCarrierInfo) {
         return (
@@ -160,20 +160,14 @@ export function AIAnalysisView({ emailGroup }: AIAnalysisViewProps) {
                         </h4>
                         <div className="space-y-2 text-xs">
                             {shipment.contents
-                                .filter((content: ShipmentContent) => content.type.name && content.type.name !== "Unknown")
+                                .filter((content: ShipmentContent) => content.name && content.name !== "Unknown")
                                 .map((content: ShipmentContent, index: number) => {
-                                    const hasDimensions = content.type.width > 0 || content.type.length > 0 || content.type.height > 0;
                                     return (
                                         <div key={index} className="space-y-1">
                                             <div className="flex justify-between items-center">
-                                                <span className="text-slate-600 font-medium">{content.type.name}</span>
+                                                <span className="text-slate-600 font-medium">{content.name}</span>
                                                 <span className="font-medium text-slate-800">x{content.quantity}</span>
                                             </div>
-                                            {hasDimensions && (
-                                                <div className="text-slate-500 pl-2">
-                                                    Размеры: {content.type.length} x {content.type.width} x {content.type.height} см
-                                                </div>
-                                            )}
                                         </div>
                                     );
                                 })}
@@ -190,7 +184,7 @@ export function AIAnalysisView({ emailGroup }: AIAnalysisViewProps) {
                             Transport modes
                         </h4>
                         <div className="space-y-1 text-xs">
-                            {aiAnalysis.modes
+                            {shipmentData.modes
                                 .filter((mode: ShipmentMode) => mode.name && mode.name !== "Unknown")
                                 .map((mode: ShipmentMode, index: number) => (
                                     <div key={index} className="text-slate-800 font-medium">
@@ -210,7 +204,7 @@ export function AIAnalysisView({ emailGroup }: AIAnalysisViewProps) {
                         </svg>
                         Information for carriers
                     </h4>
-                    <p className="text-xs text-blue-700">{aiAnalysis.for_carriers}</p>
+                    <p className="text-xs text-blue-700">{shipmentData.for_carriers}</p>
                 </div>
             )}
         </div>

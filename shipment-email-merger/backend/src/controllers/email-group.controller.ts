@@ -275,9 +275,10 @@ export class EmailGroupController {
         res.setHeader('Content-Type', 'text/event-stream');
         res.setHeader('Cache-Control', 'no-cache');
         res.setHeader('Connection', 'keep-alive');
-        // @ts-ignore - some versions of express Response may not have flushHeaders
-        if (typeof (res as any).flushHeaders === 'function') {
-            (res as any).flushHeaders();
+
+        const responseWithFlush = res as Response & { flushHeaders?: () => void };
+        if (typeof responseWithFlush.flushHeaders === 'function') {
+            responseWithFlush.flushHeaders();
         } else {
             res.write('\n');
         }

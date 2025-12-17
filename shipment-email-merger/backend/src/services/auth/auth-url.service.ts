@@ -24,8 +24,6 @@ export class AuthUrlService {
             providerName = 'Google';
         } else if (lowerEmail.includes('mail.ru')) {
             providerName = 'Mail.ru';
-        } else if (lowerEmail.includes('outlook.com')) {
-            providerName = 'Outlook';
         }
 
         logger.info('Provider config found:', {

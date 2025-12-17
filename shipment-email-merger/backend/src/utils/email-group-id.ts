@@ -2,9 +2,13 @@ import { logger } from './logger';
 
 export class EmailGroupId {
     private readonly patterns = [
-        /\b(?:[A-Z]{2})[-–](\d{6,8})\b/gi,
-        /\b(?:shipment|order|заказ)\s*[#№]?\s*(\d{6,8})\b/gi,
+        /\bShipment\s*[#]\s*(\d{6,8})\b/gi
     ];
+
+    hasEmailGroupId(text: string): boolean {
+        if (!text) return false;
+        return this.extractEmailGroupIdFromText(text) !== null;
+    }
 
     extractEmailGroupIdFromText(text: string): string | null {
         if (!text) return null;

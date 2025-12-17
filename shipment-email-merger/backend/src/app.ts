@@ -12,7 +12,7 @@ database.initialize().then(() => {
 
     setTimeout(() => {
         try {
-            AutoSyncInitializer.startAutoSync('08:00');
+            AutoSyncInitializer.startAutoSync('06:03');
             logger.info('Daily auto sync scheduled successfully for 08:00');
         } catch (error) {
             logger.error('Failed to start auto sync:', error);
@@ -25,17 +25,48 @@ database.initialize().then(() => {
 
 const app = express();
 
-app.use(cors({
-    origin: [
-        'http://localhost:3000', 
+const getCorsOrigins = (): string[] => {
+    const defaultOrigins = [
+        'http://localhost:3000',
         'http://frontend:3000',
         'http://localhost:3001',
         'http://backend:3001',
-        'http://127.0.0.1:3000' 
-    ],
+        'http://127.0.0.1:3000'
+    ];
+
+    const corsOrigin = process.env.CORS_ORIGIN;
+    if (corsOrigin) {
+        const originsFromEnv = corsOrigin.split(',').map(origin => origin.trim()).filter(Boolean);
+        return [...defaultOrigins, ...originsFromEnv];
+    }
+
+    return defaultOrigins;
+};
+
+app.use(cors({
+    origin: (origin, callback) => {
+        const allowedOrigins = getCorsOrigins();
+        
+        if (!origin || origin === 'null') {
+            logger.debug('CORS: Allowing request without origin (null)');
+            return callback(null, true);
+        }
+
+        if (allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            if (appConfig.env === 'development' && (origin.includes('localhost') || origin.includes('127.0.0.1') || origin.startsWith('file://'))) {
+                logger.debug(`CORS: Allowing local origin in development: ${origin}`);
+                return callback(null, true);
+            }
+            logger.warn(`CORS: Blocked origin ${origin}. Allowed origins: ${allowedOrigins.join(', ')}`);
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Cookie']
+    allowedHeaders: ['Content-Type', 'Authorization', 'Cookie', 'X-Requested-With'],
+    exposedHeaders: ['Content-Length', 'Content-Type']
 }));
 
 app.use(express.json());

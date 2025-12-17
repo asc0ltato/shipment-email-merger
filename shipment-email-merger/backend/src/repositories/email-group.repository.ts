@@ -1,7 +1,6 @@
 import { Sequelize, Op } from 'sequelize';
 import { initModels, Models } from '@/models';
 import { IEmailGroup } from '@/models/email-group';
-import { ISummary } from '@/models/summary';
 import { logger } from '@/utils';
 
 export class EmailGroupRepository {
@@ -203,7 +202,7 @@ export class EmailGroupRepository {
         return {
             summaryId: summary.summaryId,
             emailGroupId: summary.emailGroupId,
-            aiAnalysis: summary.aiAnalysis,
+            shipment_data: summary.shipment_data,
             summary: summary.summary || '',
             status: summary.status,
             createdAt: summary.createdAt,

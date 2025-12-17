@@ -5,13 +5,18 @@ import { logger } from '@/utils';
 import { IEmailGroup } from "@/models/email-group";
 import { ShipmentRequest } from "@/models/summary";
 import { SSEService } from '../sse/sse.service';
+import { EmailGroupId } from '@/utils/email-group-id';
 
 export class AiAnalysisService {
+    private emailGroupIdService: EmailGroupId;
+
     constructor(
         private deepseekService: DeepseekService,
         private emailGroupRepo: EmailGroupRepository,
         private summaryService: SummaryService
-    ) {}
+    ) {
+        this.emailGroupIdService = new EmailGroupId();
+    }
 
     async processSingleEmailGroup(emailGroupId: string): Promise<{
         emailGroupId: string;
@@ -82,9 +87,10 @@ export class AiAnalysisService {
                     logger.warn('AI analysis completed but no useful information found in emails');
                     logger.info('Email content sample:', {
                         subjects: emailGroupData.emails.map(e => e.subject),
-                        has_order_numbers: emailGroupData.emails.some(e => 
-                            e.text?.includes('BY-') || e.subject?.includes('BY-')
-                        ),
+                        has_order_numbers: emailGroupData.emails.some(e => {
+                            const searchText = `${e.subject} ${e.text || ''}`;
+                            return this.emailGroupIdService.hasEmailGroupId(searchText);
+                        }),
                         email_count: emailGroupData.emails.length
                     });
                     

@@ -38,8 +38,7 @@ export class UserInfo {
         if (providerConfig.userInfoUrl.includes('mail.ru')) {
             userInfoUrl += `?access_token=${accessToken}`;
         } else if (
-            providerConfig.userInfoUrl.includes('google') ||
-            providerConfig.userInfoUrl.includes('graph.microsoft.com')
+            providerConfig.userInfoUrl.includes('google')
         ) {
             headers['Authorization'] = `Bearer ${accessToken}`;
         }
@@ -52,8 +51,6 @@ export class UserInfo {
             return userInfo.email;
         } else if (providerConfig.userInfoUrl.includes('mail.ru')) {
             return userInfo.email;
-        } else if (providerConfig.userInfoUrl.includes('graph.microsoft.com')) {
-            return userInfo.mail || userInfo.userPrincipalName;
         }
     }
 }

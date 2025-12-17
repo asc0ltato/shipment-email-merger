@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef } from 'react';
 import { IEmailGroup } from '@/types/email-group.types';
 import { emailGroupsApi } from '@/lib/api';
+import { logger } from '@/utils/logger';
 
 interface UseEmailGroupsProps {
     initialEmailGroups?: IEmailGroup[];
@@ -24,7 +25,7 @@ export function useEmailGroups(props: UseEmailGroupsProps = {}) {
 
     const loadAllEmailGroups = useCallback(async (): Promise<void> => {
         if (isUpdatingRef.current) {
-            console.log('Update already in progress, skipping...');
+            logger.log('Update already in progress, skipping...');
             return;
         }
 
@@ -34,7 +35,7 @@ export function useEmailGroups(props: UseEmailGroupsProps = {}) {
         try {
             const sessionId = localStorage.getItem('sessionId');
             if (!sessionId) {
-                console.log('No session ID found');
+                logger.log('No session ID found');
                 return;
             }
 
@@ -43,15 +44,15 @@ export function useEmailGroups(props: UseEmailGroupsProps = {}) {
             if (data.success && data.data) {
                 const newEmailGroups = data.data.emailGroups || [];
                 setAllEmailGroups(newEmailGroups);
-                console.log(`Loaded ${newEmailGroups.length} email groups`);
+                logger.log(`Loaded ${newEmailGroups.length} email groups`);
             } else {
                 showToast?.(data.message || 'Failed to load email groups', 'error');
             }
         } catch (error: any) {
-            console.error('Error loading email groups:', error);
+            logger.error('Error loading email groups:', error);
 
             if (error.message.includes('401') || error.message.includes('authentication')) {
-                console.warn('Session may have expired');
+                logger.warn('Session may have expired');
                 await checkAuth?.();
             } else {
                 showToast?.(error.message || 'Error loading email groups', 'error');
@@ -64,7 +65,7 @@ export function useEmailGroups(props: UseEmailGroupsProps = {}) {
 
     const handleEmailGroupClick = useCallback(async (emailGroupId: string): Promise<void> => {
         if (pendingOperationsRef.current.has(emailGroupId)) {
-            console.log(`Operation for ${emailGroupId} already in progress, skipping...`);
+            logger.log(`Operation for ${emailGroupId} already in progress, skipping...`);
             return;
         }
 
@@ -102,7 +103,7 @@ export function useEmailGroups(props: UseEmailGroupsProps = {}) {
                 showToast?.(result.message || 'Failed to refresh group', 'error');
             }
         } catch (error: any) {
-            console.error('Error refreshing email group:', error);
+            logger.error('Error refreshing email group:', error);
             if (error.message?.includes('429')) {
                 showToast?.('Refresh already in progress for this group. Please wait.', 'info');
             } else if (error.message?.includes('401') || error.message?.includes('authentication')) {
@@ -119,7 +120,7 @@ export function useEmailGroups(props: UseEmailGroupsProps = {}) {
     }, [showToast, updateLastSyncTime]);
 
     const handleGroupUpdated = useCallback((emailGroupId: string, updatedGroup: IEmailGroup, isNewGroup: boolean = false) => {
-        console.log('Updating group:', { emailGroupId, isNewGroup });
+        logger.log('Updating group:', { emailGroupId, isNewGroup });
 
         setAllEmailGroups(prev => {
             if (isNewGroup) {
@@ -139,7 +140,7 @@ export function useEmailGroups(props: UseEmailGroupsProps = {}) {
 
     const handleRegenerateAI = useCallback(async (emailGroupId: string): Promise<void> => {
         if (pendingOperationsRef.current.has(emailGroupId)) {
-            console.log(`Regeneration for ${emailGroupId} already in progress`);
+            logger.log(`Regeneration for ${emailGroupId} already in progress`);
             return;
         }
 
@@ -182,7 +183,7 @@ export function useEmailGroups(props: UseEmailGroupsProps = {}) {
                 await loadAllEmailGroups();
             }
         } catch (error: any) {
-            console.error('Error regenerating AI:', error);
+            logger.error('Error regenerating AI:', error);
             showToast?.(error.message || 'Error regenerating AI analysis', 'error');
 
             await loadAllEmailGroups();
@@ -195,7 +196,7 @@ export function useEmailGroups(props: UseEmailGroupsProps = {}) {
 
     const handleDeleteSummary = useCallback(async (emailGroupId: string): Promise<void> => {
         if (pendingOperationsRef.current.has(emailGroupId)) {
-            console.log(`Delete operation for ${emailGroupId} already in progress`);
+            logger.log(`Delete operation for ${emailGroupId} already in progress`);
             return;
         }
 
@@ -217,7 +218,7 @@ export function useEmailGroups(props: UseEmailGroupsProps = {}) {
                 showToast?.(data.message || 'Error deleting AI analysis', 'error');
             }
         } catch (error: any) {
-            console.error('Error deleting summary:', error);
+            logger.error('Error deleting summary:', error);
             showToast?.(error.message || 'Error deleting AI analysis', 'error');
         } finally {
             pendingOperationsRef.current.delete(emailGroupId);
@@ -253,7 +254,7 @@ export function useEmailGroups(props: UseEmailGroupsProps = {}) {
                 showToast?.(data.message || 'Error deleting email group', 'error');
             }
         } catch (error: any) {
-            console.error('Error deleting email group:', error);
+            logger.error('Error deleting email group:', error);
             showToast?.(error.message || 'Error deleting email group', 'error');
         } finally {
             pendingOperationsRef.current.delete(selectedEmailGroupId);
@@ -262,7 +263,7 @@ export function useEmailGroups(props: UseEmailGroupsProps = {}) {
 
     const handleApproveEmailGroup = useCallback(async (emailGroupId: string): Promise<void> => {
         if (pendingOperationsRef.current.has(emailGroupId)) {
-            console.log(`Approve operation for ${emailGroupId} already in progress`);
+            logger.log(`Approve operation for ${emailGroupId} already in progress`);
             return;
         }
 
@@ -286,7 +287,7 @@ export function useEmailGroups(props: UseEmailGroupsProps = {}) {
                 showToast?.(data.message || 'Error approving email group', 'error');
             }
         } catch (error: any) {
-            console.error('Error approving email group:', error);
+            logger.error('Error approving email group:', error);
             showToast?.(error.message || 'Error approving email group', 'error');
         } finally {
             pendingOperationsRef.current.delete(emailGroupId);
@@ -295,7 +296,7 @@ export function useEmailGroups(props: UseEmailGroupsProps = {}) {
 
     const handleRejectEmailGroup = useCallback(async (emailGroupId: string): Promise<void> => {
         if (pendingOperationsRef.current.has(emailGroupId)) {
-            console.log(`Reject operation for ${emailGroupId} already in progress`);
+            logger.log(`Reject operation for ${emailGroupId} already in progress`);
             return;
         }
 
@@ -319,7 +320,7 @@ export function useEmailGroups(props: UseEmailGroupsProps = {}) {
                 showToast?.(data.message || 'Error rejecting email group', 'error');
             }
         } catch (error: any) {
-            console.error('Error rejecting email group:', error);
+            logger.error('Error rejecting email group:', error);
             showToast?.(error.message || 'Error rejecting email group', 'error');
         } finally {
             pendingOperationsRef.current.delete(emailGroupId);
@@ -327,7 +328,7 @@ export function useEmailGroups(props: UseEmailGroupsProps = {}) {
     }, [showToast]);
 
     const handleEmailGroupRefresh = useCallback((emailGroupId: string, updatedGroup: IEmailGroup, isNewGroup: boolean = false) => {
-        console.log('Refreshing group from external source:', { emailGroupId, isNewGroup });
+        logger.log('Refreshing group from external source:', { emailGroupId, isNewGroup });
         handleGroupUpdated(emailGroupId, updatedGroup, isNewGroup);
     }, [handleGroupUpdated]);
 

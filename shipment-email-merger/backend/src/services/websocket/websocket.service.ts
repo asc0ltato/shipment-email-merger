@@ -47,25 +47,23 @@ export class WebSocketService {
         }
 
         try {
-            let aiAnalysis: ShipmentRequest | null = null;
+            let shipmentData: ShipmentRequest | null = null;
             
             if (emailGroup.summary && emailGroup.summary.status === 'approved') {
-                aiAnalysis = emailGroup.summary.aiAnalysis;
+                shipmentData = (emailGroup.summary as any).shipment_data;
             } else if (emailGroup.summaries) {
                 const approvedSummary = emailGroup.summaries.find(s => s.status === 'approved');
-                aiAnalysis = approvedSummary?.aiAnalysis || null;
+                shipmentData = approvedSummary ? (approvedSummary as any).shipment_data : null;
             }
             
-            if (!aiAnalysis) {
+            if (!shipmentData) {
                 return;
             }
-
-            const { is_ai_generated, ...aiAnalysisWithoutFlag } = aiAnalysis;
             
             const message = JSON.stringify({
                 type: 'approved_summary',
                 data: {
-                    aiAnalysis: aiAnalysisWithoutFlag
+                    shipment_data: shipmentData
                 }
             });
 
@@ -96,4 +94,3 @@ export class WebSocketService {
         return this.clients.size;
     }
 }
-

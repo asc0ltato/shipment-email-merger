@@ -29,7 +29,7 @@ export function EmailGroupSummary({
 
     useEffect(() => {
         setViewMode('summary');
-    }, [emailGroup?.emailGroupId, emailGroup?.summary?.aiAnalysis]);
+    }, [emailGroup?.emailGroupId, emailGroup?.summary?.shipment_data]);
 
     const getAllAttachments = (): any[] => {
         if (!emailGroup?.emails) return [];
@@ -45,17 +45,16 @@ export function EmailGroupSummary({
     };
 
     const attachments = getAllAttachments();
-    const hasAIAnalysis = emailGroup?.summary?.aiAnalysis &&
-        emailGroup.summary.aiAnalysis.is_ai_generated;
+    const hasShipmentData = !!emailGroup?.summary?.shipment_data;
         
     const hasSummary = !!emailGroup?.summary;
 
-    const showTabs = hasAIAnalysis;
+    const showTabs = hasShipmentData;
 
     const downloadJson = () => {
-        if (!emailGroup || !emailGroup.summary?.aiAnalysis) return;
+        if (!emailGroup || !emailGroup.summary?.shipment_data) return;
 
-        const blob = new Blob([JSON.stringify(emailGroup.summary.aiAnalysis, null, 2)], { type: 'application/json' });
+        const blob = new Blob([JSON.stringify(emailGroup.summary.shipment_data, null, 2)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -113,7 +112,7 @@ export function EmailGroupSummary({
         <div className="bg-white rounded-lg shadow-sm border border-slate-200 h-full flex flex-col relative">
             <SummaryHeader
                 emailGroup={emailGroup}
-                hasAIAnalysis={hasAIAnalysis}
+                hasAIAnalysis={hasShipmentData}
                 showTabs={showTabs}
                 viewMode={viewMode}
                 onViewModeChange={setViewMode}
@@ -125,7 +124,7 @@ export function EmailGroupSummary({
 
             <SummaryActions
                 emailGroup={emailGroup}
-                hasAIAnalysis={hasAIAnalysis}
+                hasAIAnalysis={hasShipmentData}
                 isRegenerating={isRegenerating}
                 onApprove={onApprove}
                 onReject={onReject}

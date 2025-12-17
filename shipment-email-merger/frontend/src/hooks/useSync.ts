@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import { emailGroupsApi, syncApi } from '@/lib/api';
 import { IEmailGroup } from '@/types/email-group.types';
+import { logger } from '@/utils/logger';
 
 interface UseSyncProps {
     showToast?: (message: string, type: 'success' | 'error' | 'info') => void;
@@ -45,7 +46,7 @@ export function useSync(props: UseSyncProps = {}) {
                 }
             }
         } catch (error) {
-            console.warn('Failed to fetch auto sync status:', error);
+            logger.warn('Failed to fetch auto sync status:', error);
         }
     }, []);
 
@@ -105,13 +106,10 @@ export function useSync(props: UseSyncProps = {}) {
                 if (createdGroups.length > 0) {
                     setAllEmailGroups?.(prev => {
                         const newGroups = [...createdGroups, ...prev];
-                        console.log(`Added ${createdGroups.length} new groups from sync`);
+                        logger.log(`Added ${createdGroups.length} new groups from sync`);
                         return newGroups;
                     });
                 }
-
-                updateLastSyncTime?.();
-                updateLastSyncTimeInternal();
 
                 const message = `Sync completed! Email groups created: ${result.data.created}, Updated: ${result.data.updated}, New emails: ${result.data.newEmails}`;
                 showToast?.(message, 'success');
@@ -123,7 +121,7 @@ export function useSync(props: UseSyncProps = {}) {
         } finally {
             setIsSyncing(false);
         }
-    }, [dateRange, showToast, updateLastSyncTime, updateLastSyncTimeInternal, setAllEmailGroups]);
+    }, [dateRange, showToast, setAllEmailGroups]);
 
     return {
         isSyncing,
