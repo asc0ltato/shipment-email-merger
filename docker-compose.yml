@@ -1,0 +1,75 @@
+services:
+  postgres:
+    image: postgres:alpine3.22
+    environment:
+      POSTGRES_DB: ShipmentEmailMerger
+      POSTGRES_USER: ascoltat0
+      POSTGRES_PASSWORD: 1234
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    container_name: shipment-email-merger_postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ascoltat0 -d ShipmentEmailMerger"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - app-network
+  # ollama:
+  #   image: ollama/ollama:latest
+  #   container_name: shipment-email-merger_ollama
+  #   ports:
+  #     - '11434:11434'
+  #   volumes:
+  #     - ollama_data:/root/.ollama
+  #   networks:
+  #     - app-network
+  backend:
+    image: shipment-email-merger_backend
+    build:
+      context: ./shipment-email-merger/backend
+      dockerfile: Dockerfile
+    env_file: ./shipment-email-merger/backend/.env
+    ports:
+      - '3001:3001'
+    container_name: shipment-email-merger_backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+      # ollama:
+      #   condition: service_started
+    networks:
+      - app-network
+  frontend:
+    image: shipment-email-merger_frontend
+    build: 
+        context: ./shipment-email-merger/frontend
+        dockerfile: Dockerfile
+    ports:
+      - '3000:3000'
+    container_name: shipment-email-merger_frontend
+    depends_on:
+      - backend
+    networks:
+      - app-network
+  summary-api:
+    image: summary-api
+    build: 
+      context: ./summary-api
+      dockerfile: Dockerfile
+    env_file: ./summary-api/.env
+    ports:
+      - '3002:3002'
+    container_name: summary-api
+    depends_on:
+      - backend
+    networks:
+      - app-network
+volumes:
+  pgdata:
+  # ollama_data:
+networks:
+  app-network:
+    driver: bridge
